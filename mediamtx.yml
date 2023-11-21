@@ -557,3 +557,12 @@ paths:
   # Settings under path "all_others" are applied to all paths that
   # do not match another entry.
   all_others:
+
+
+database:
+  use: true
+  dbAddress: 127.0.0.1
+  dbPort: 5432
+  dbName: mediamtx
+  dbUser: mediamtx
+  dbPassword: mediamtx
