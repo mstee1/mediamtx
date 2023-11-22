@@ -566,3 +566,4 @@ database:
   dbName: mediamtx
   dbUser: mediamtx
   dbPassword: mediamtx
+  maxConnections: 1

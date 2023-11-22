@@ -1,12 +1,13 @@
 package conf
 
 type Database struct {
-	Use        bool   `json:"use"`
-	DbAddress  string `json:"dbAddress"`
-	DbPort     int    `json:"dbPort"`
-	DbName     string `json:"dbName"`
-	DbUser     string `json:"dbUser"`
-	DbPassword string `json:"dbPassword"`
+	Use            bool   `json:"use"`
+	DbAddress      string `json:"dbAddress"`
+	DbPort         int    `json:"dbPort"`
+	DbName         string `json:"dbName"`
+	DbUser         string `json:"dbUser"`
+	DbPassword     string `json:"dbPassword"`
+	MaxConnections int    `json:"maxConnections"`
 }
 
 func (db *Database) setDefaults() {
@@ -17,5 +18,6 @@ func (db *Database) setDefaults() {
 	db.DbName = "postgres"
 	db.DbUser = "postgres"
 	db.DbPassword = ""
+	db.MaxConnections = 0
 
 }
