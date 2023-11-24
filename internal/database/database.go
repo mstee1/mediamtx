@@ -10,8 +10,8 @@ import (
 
 func CreatePgxConf(cfg conf.Database) *pgxpool.Config {
 
-	conf := &pgxpool.Config{}
 	if cfg.Use {
+		conf, _ := pgxpool.ParseConfig("")
 		conf.ConnConfig.User = cfg.DbUser
 		conf.ConnConfig.Password = cfg.DbPassword
 		conf.ConnConfig.Host = cfg.DbAddress
@@ -19,21 +19,34 @@ func CreatePgxConf(cfg conf.Database) *pgxpool.Config {
 		conf.ConnConfig.Database = cfg.DbName
 		conf.MaxConns = int32(cfg.MaxConnections)
 		conf.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+		return conf
 	}
 
-	return conf
+	return nil
 
 }
 
 func CreateDbPool(ctx context.Context, conf *pgxpool.Config) (*pgxpool.Pool, error) {
 
+	if conf == nil {
+		return nil, nil
+	}
+
 	pool, err := pgxpool.NewWithConfig(ctx, conf)
 	if err != nil {
 		return nil, err
 	}
+
+	_, err = pool.Exec(ctx, "SELECT '1'")
+	if err != nil {
+		return nil, err
+	}
+
 	return pool, nil
 }
 
 func ClosePool(pool *pgxpool.Pool) {
-	pool.Close()
+	if pool != nil {
+		pool.Close()
+	}
 }

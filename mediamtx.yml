@@ -560,10 +560,10 @@ paths:
 
 
 database:
-  use: true
+  use: false
   dbAddress: 127.0.0.1
   dbPort: 5432
-  dbName: mediamtx
-  dbUser: mediamtx
-  dbPassword: mediamtx
+  dbName: mediaMtx
+  dbUser: mediaMtx
+  dbPassword: mediaMtx
   maxConnections: 1

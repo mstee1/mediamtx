@@ -15,9 +15,11 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/bluenviron/gortsplib/v4"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/bluenviron/mediamtx/internal/conf"
 	"github.com/bluenviron/mediamtx/internal/confwatcher"
+	"github.com/bluenviron/mediamtx/internal/database"
 	"github.com/bluenviron/mediamtx/internal/externalcmd"
 	"github.com/bluenviron/mediamtx/internal/logger"
 	"github.com/bluenviron/mediamtx/internal/record"
@@ -92,6 +94,7 @@ type Core struct {
 	srtServer       *srtServer
 	api             *api
 	confWatcher     *confwatcher.ConfWatcher
+	dbPool          *pgxpool.Pool
 
 	// in
 	chAPIConfigSet chan *conf.Conf
@@ -315,6 +318,16 @@ func (p *Core) createResources(initial bool) error {
 			p.metrics,
 			p,
 		)
+	}
+
+	p.dbPool, err = database.CreateDbPool(
+		p.ctx,
+		database.CreatePgxConf(
+			p.conf.Database,
+		),
+	)
+	if err != nil {
+		return err
 	}
 
 	if p.conf.RTSP &&
@@ -809,6 +822,8 @@ func (p *Core) closeResources(newConf *conf.Conf, calledByAPI bool) {
 		p.logger.Close()
 		p.logger = nil
 	}
+
+	database.ClosePool(p.dbPool)
 }
 
 func (p *Core) reloadConf(newConf *conf.Conf, calledByAPI bool) error {
