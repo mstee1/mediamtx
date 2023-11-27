@@ -340,3 +340,18 @@ func TestSampleConfFile(t *testing.T) {
 		require.Equal(t, conf1.Paths, conf2.Paths)
 	}()
 }
+
+func TestDefaultDatabase(t *testing.T) {
+
+	db := Database{}
+	db.setDefaults()
+
+	require.Equal(t, false, db.Use)
+	require.Equal(t, "127.0.0.1", db.DbAddress)
+	require.Equal(t, 5432, db.DbPort)
+	require.Equal(t, "postgres", db.DbName)
+	require.Equal(t, "postgres", db.DbUser)
+	require.Equal(t, "", db.DbPassword)
+	require.Equal(t, 0, db.MaxConnections)
+
+}

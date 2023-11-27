@@ -563,7 +563,7 @@ database:
   use: false
   dbAddress: 127.0.0.1
   dbPort: 5432
-  dbName: mediaMtx
-  dbUser: mediaMtx
-  dbPassword: mediaMtx
-  maxConnections: 1
+  dbName: postgres
+  dbUser: postgres
+  dbPassword: 
+  maxConnections: 0
