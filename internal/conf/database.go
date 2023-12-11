@@ -8,6 +8,12 @@ type Database struct {
 	DbUser         string `json:"dbUser"`
 	DbPassword     string `json:"dbPassword"`
 	MaxConnections int    `json:"maxConnections"`
+	Sql            Sql    `json:"sql"`
+}
+
+type Sql struct {
+	InsertPath string `json:"insertPath"`
+	UpdateSize string `json:"updateSize"`
 }
 
 func (db *Database) setDefaults() {
@@ -19,5 +25,9 @@ func (db *Database) setDefaults() {
 	db.DbUser = "postgres"
 	db.DbPassword = ""
 	db.MaxConnections = 0
+	db.Sql = Sql{
+		InsertPath: "",
+		UpdateSize: "",
+	}
 
 }

@@ -353,5 +353,7 @@ func TestDefaultDatabase(t *testing.T) {
 	require.Equal(t, "postgres", db.DbUser)
 	require.Equal(t, "", db.DbPassword)
 	require.Equal(t, 0, db.MaxConnections)
+	require.Equal(t, "", db.Sql.InsertPath)
+	require.Equal(t, "", db.Sql.UpdateSize)
 
 }
