@@ -49,13 +49,15 @@ func (a *agentInstance) initialize() {
 	switch a.wrapper.Format {
 	case conf.RecordFormatMPEGTS:
 		a.format = &recFormatMPEGTS{
-			a: a,
+			a:        a,
+			pathName: a.wrapper.PathName,
 		}
 		a.format.initialize()
 
 	default:
 		a.format = &recFormatFMP4{
-			a: a,
+			a:        a,
+			pathName: a.wrapper.PathName,
 		}
 		a.format.initialize()
 	}

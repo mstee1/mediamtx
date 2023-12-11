@@ -42,7 +42,7 @@ udpMaxPayloadSize: 1472
 externalAuthenticationURL:
 
 # Enable the HTTP API.
-api: no
+api: yes
 # Address of the API listener.
 apiAddress: 127.0.0.1:9997
 
@@ -293,24 +293,24 @@ pathDefaults:
   # Default path settings -> Recording
 
   # Record streams to disk.
-  record: no
+  record: yes
   # Path of recording segments.
   # Extension is added automatically.
   # Available variables are %path (path name), %Y %m %d %H %M %S %f (time in strftime format)
   recordPath: ./recordings/%path/%Y-%m-%d_%H-%M-%S-%f
   # Format of recorded segments.
   # Available formats are "fmp4" (fragmented MP4) and "mpegts" (MPEG-TS).
-  recordFormat: fmp4
+  recordFormat: mpegts
   # fMP4 segments are concatenation of small MP4 files (parts), each with this duration.
   # MPEG-TS segments are concatenation of 188-bytes packets, flushed to disk with this period.
   # When a system failure occurs, the last part gets lost.
   # Therefore, the part duration is equal to the RPO (recovery point objective).
   recordPartDuration: 100ms
   # Minimum duration of each segment.
-  recordSegmentDuration: 1h
+  recordSegmentDuration: 10s
   # Delete segments after this timespan.
   # Set to 0s to disable automatic deletion.
-  recordDeleteAfter: 24h
+  recordDeleteAfter: 0s
 
   ###############################################
   # Default path settings -> Authentication

@@ -46,6 +46,8 @@ type recFormatMPEGTS struct {
 	mw             *mpegts.Writer
 	hasVideo       bool
 	currentSegment *recFormatMPEGTSSegment
+
+	pathName string
 }
 
 func (f *recFormatMPEGTS) initialize() {

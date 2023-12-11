@@ -9,15 +9,19 @@ type recFormatFMP4Track struct {
 	initTrack *fmp4.InitTrack
 
 	nextSample *sample
+
+	pathName string
 }
 
 func newRecFormatFMP4Track(
 	f *recFormatFMP4,
 	initTrack *fmp4.InitTrack,
+	pathName string,
 ) *recFormatFMP4Track {
 	return &recFormatFMP4Track{
 		f:         f,
 		initTrack: initTrack,
+		pathName:  pathName,
 	}
 }
 
@@ -28,7 +32,7 @@ func (t *recFormatFMP4Track) record(sample *sample) error {
 	}
 
 	if t.f.currentSegment == nil {
-		t.f.currentSegment = newRecFormatFMP4Segment(t.f, sample.dts)
+		t.f.currentSegment = newRecFormatFMP4Segment(t.f, sample.dts, t.pathName)
 	}
 
 	sample, t.nextSample = t.nextSample, sample
@@ -50,7 +54,7 @@ func (t *recFormatFMP4Track) record(sample *sample) error {
 			return err
 		}
 
-		t.f.currentSegment = newRecFormatFMP4Segment(t.f, t.nextSample.dts)
+		t.f.currentSegment = newRecFormatFMP4Segment(t.f, t.nextSample.dts, t.pathName)
 	}
 
 	return nil

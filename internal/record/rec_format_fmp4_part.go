@@ -1,6 +1,7 @@
 package record
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -47,12 +48,15 @@ type recFormatFMP4Part struct {
 	created    time.Time
 	partTracks map[*recFormatFMP4Track]*fmp4.PartTrack
 	endDTS     time.Duration
+
+	pathName string
 }
 
 func newRecFormatFMP4Part(
 	s *recFormatFMP4Segment,
 	sequenceNumber uint32,
 	startDTS time.Duration,
+	pathName string,
 ) *recFormatFMP4Part {
 	return &recFormatFMP4Part{
 		s:              s,
@@ -60,6 +64,7 @@ func newRecFormatFMP4Part(
 		sequenceNumber: sequenceNumber,
 		created:        timeNow(),
 		partTracks:     make(map[*recFormatFMP4Track]*fmp4.PartTrack),
+		pathName:       pathName,
 	}
 }
 
@@ -67,6 +72,7 @@ func (p *recFormatFMP4Part) close() error {
 	if p.s.fi == nil {
 		p.s.fpath = encodeRecordPath(&recordPathParams{time: p.created}, p.s.f.a.resolvedPath)
 		p.s.f.a.wrapper.Log(logger.Debug, "creating segment %s", p.s.fpath)
+		fmt.Println(p.pathName, "- creating")
 
 		err := os.MkdirAll(filepath.Dir(p.s.fpath), 0o755)
 		if err != nil {

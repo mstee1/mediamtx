@@ -103,6 +103,8 @@ type recFormatFMP4 struct {
 	hasVideo           bool
 	currentSegment     *recFormatFMP4Segment
 	nextSequenceNumber uint32
+
+	pathName string
 }
 
 func (f *recFormatFMP4) initialize() {
@@ -116,7 +118,7 @@ func (f *recFormatFMP4) initialize() {
 		initTrack.ID = nextID
 		nextID++
 
-		track := newRecFormatFMP4Track(f, initTrack)
+		track := newRecFormatFMP4Track(f, initTrack, f.pathName)
 		f.tracks = append(f.tracks, track)
 
 		return track

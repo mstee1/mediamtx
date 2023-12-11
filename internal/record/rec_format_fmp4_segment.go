@@ -1,6 +1,7 @@
 package record
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"time"
@@ -37,18 +38,21 @@ type recFormatFMP4Segment struct {
 	f        *recFormatFMP4
 	startDTS time.Duration
 
-	fpath   string
-	fi      *os.File
-	curPart *recFormatFMP4Part
+	fpath    string
+	pathName string
+	fi       *os.File
+	curPart  *recFormatFMP4Part
 }
 
 func newRecFormatFMP4Segment(
 	f *recFormatFMP4,
 	startDTS time.Duration,
+	pathName string,
 ) *recFormatFMP4Segment {
 	return &recFormatFMP4Segment{
 		f:        f,
 		startDTS: startDTS,
+		pathName: pathName,
 	}
 }
 
@@ -61,6 +65,7 @@ func (s *recFormatFMP4Segment) close() error {
 
 	if s.fi != nil {
 		s.f.a.wrapper.Log(logger.Debug, "closing segment %s", s.fpath)
+		fmt.Println(s.pathName, "- closing")
 		err2 := s.fi.Close()
 		if err == nil {
 			err = err2
@@ -76,7 +81,7 @@ func (s *recFormatFMP4Segment) close() error {
 
 func (s *recFormatFMP4Segment) record(track *recFormatFMP4Track, sample *sample) error {
 	if s.curPart == nil {
-		s.curPart = newRecFormatFMP4Part(s, s.f.nextSequenceNumber, sample.dts)
+		s.curPart = newRecFormatFMP4Part(s, s.f.nextSequenceNumber, sample.dts, s.pathName)
 		s.f.nextSequenceNumber++
 	} else if s.curPart.duration() >= s.f.a.wrapper.PartDuration {
 		err := s.curPart.close()
@@ -86,7 +91,7 @@ func (s *recFormatFMP4Segment) record(track *recFormatFMP4Track, sample *sample)
 			return err
 		}
 
-		s.curPart = newRecFormatFMP4Part(s, s.f.nextSequenceNumber, sample.dts)
+		s.curPart = newRecFormatFMP4Part(s, s.f.nextSequenceNumber, sample.dts, s.pathName)
 		s.f.nextSequenceNumber++
 	}
 

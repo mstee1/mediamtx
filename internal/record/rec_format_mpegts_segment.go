@@ -1,6 +1,7 @@
 package record
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -13,9 +14,10 @@ type recFormatMPEGTSSegment struct {
 	startDTS  time.Duration
 	lastFlush time.Duration
 
-	created time.Time
-	fpath   string
-	fi      *os.File
+	created  time.Time
+	fpath    string
+	pathName string
+	fi       *os.File
 }
 
 func newRecFormatMPEGTSSegment(f *recFormatMPEGTS, startDTS time.Duration) *recFormatMPEGTSSegment {
@@ -24,6 +26,7 @@ func newRecFormatMPEGTSSegment(f *recFormatMPEGTS, startDTS time.Duration) *recF
 		startDTS:  startDTS,
 		lastFlush: startDTS,
 		created:   timeNow(),
+		pathName:  f.pathName,
 	}
 
 	f.dw.setTarget(s)
@@ -36,6 +39,7 @@ func (s *recFormatMPEGTSSegment) close() error {
 
 	if s.fi != nil {
 		s.f.a.wrapper.Log(logger.Debug, "closing segment %s", s.fpath)
+		fmt.Println(s.pathName, "- closing")
 		err2 := s.fi.Close()
 		if err == nil {
 			err = err2
@@ -53,6 +57,7 @@ func (s *recFormatMPEGTSSegment) Write(p []byte) (int, error) {
 	if s.fi == nil {
 		s.fpath = encodeRecordPath(&recordPathParams{time: s.created}, s.f.a.resolvedPath)
 		s.f.a.wrapper.Log(logger.Debug, "creating segment %s", s.fpath)
+		fmt.Println(s.pathName, "- creating")
 
 		err := os.MkdirAll(filepath.Dir(s.fpath), 0o755)
 		if err != nil {
