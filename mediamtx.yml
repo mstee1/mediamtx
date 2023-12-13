@@ -300,7 +300,7 @@ pathDefaults:
   recordPath: ./recordings/%path/%Y-%m-%d_%H-%M-%S-%f
   # Format of recorded segments.
   # Available formats are "fmp4" (fragmented MP4) and "mpegts" (MPEG-TS).
-  recordFormat: mpegts
+  recordFormat: fmp4
   # fMP4 segments are concatenation of small MP4 files (parts), each with this duration.
   # MPEG-TS segments are concatenation of 188-bytes packets, flushed to disk with this period.
   # When a system failure occurs, the last part gets lost.
@@ -560,13 +560,13 @@ paths:
 
 
 database:
-  use: false
+  use: true
   dbAddress: 127.0.0.1
   dbPort: 5432
-  dbName: postgres
-  dbUser: postgres
+  dbName: 
+  dbUser: 
   dbPassword: 
-  maxConnections: 0
+  maxConnections: 1
   sql:
-    insertPath: ""
-    updateSize: ""
+    insertPath: "INSERT INTO \"video_record\" (\"code_mp_cam\", \"path_record\", \"file_name\", \"date_time_start\") VALUES ('%s', '%s', '%s', '%s')" 
+    updateSize: "UPDATE \"video_record\" SET \"file_size\"='%s', \"date_time_end\"='%s' WHERE \"file_name\"='%s'" 

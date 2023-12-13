@@ -30,9 +30,11 @@ func (t *recFormatFMP4Track) record(sample *sample) error {
 	if t.initTrack.Codec.IsVideo() {
 		t.f.hasVideo = true
 	}
-
 	if t.f.currentSegment == nil {
-		t.f.currentSegment = newRecFormatFMP4Segment(t.f, sample.dts, t.pathName)
+		t.f.currentSegment = newRecFormatFMP4Segment(t.f,
+			sample.dts,
+			t.pathName,
+		)
 	}
 
 	sample, t.nextSample = t.nextSample, sample
@@ -54,7 +56,10 @@ func (t *recFormatFMP4Track) record(sample *sample) error {
 			return err
 		}
 
-		t.f.currentSegment = newRecFormatFMP4Segment(t.f, t.nextSample.dts, t.pathName)
+		t.f.currentSegment = newRecFormatFMP4Segment(t.f,
+			t.nextSample.dts,
+			t.pathName,
+		)
 	}
 
 	return nil

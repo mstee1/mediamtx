@@ -10,6 +10,7 @@ import (
 	"github.com/bluenviron/mediamtx/internal/defs"
 	"github.com/bluenviron/mediamtx/internal/externalcmd"
 	"github.com/bluenviron/mediamtx/internal/logger"
+	"github.com/bluenviron/mediamtx/internal/storage"
 )
 
 func pathConfCanBeUpdated(oldPathConf *conf.Path, newPathConf *conf.Path) bool {
@@ -98,6 +99,8 @@ type pathManager struct {
 	chAddPublisher   chan pathAddPublisherReq
 	chAPIPathsList   chan pathAPIPathsListReq
 	chAPIPathsGet    chan pathAPIPathsGetReq
+
+	stor storage.Storage
 }
 
 func newPathManager(
@@ -112,7 +115,9 @@ func newPathManager(
 	externalCmdPool *externalcmd.Pool,
 	metrics *metrics,
 	parent pathManagerParent,
+	stor storage.Storage,
 ) *pathManager {
+
 	ctx, ctxCancel := context.WithCancel(context.Background())
 
 	pm := &pathManager{
@@ -142,6 +147,7 @@ func newPathManager(
 		chAddPublisher:            make(chan pathAddPublisherReq),
 		chAPIPathsList:            make(chan pathAPIPathsListReq),
 		chAPIPathsGet:             make(chan pathAPIPathsGetReq),
+		stor:                      stor,
 	}
 
 	for pathConfName, pathConf := range pm.pathConfs {
@@ -410,7 +416,8 @@ func (pm *pathManager) createPath(
 		matches,
 		&pm.wg,
 		pm.externalCmdPool,
-		pm)
+		pm,
+		pm.stor)
 
 	pm.paths[name] = pa
 

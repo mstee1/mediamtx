@@ -19,6 +19,7 @@ import (
 	"github.com/bluenviron/mediacommon/pkg/formats/fmp4"
 
 	"github.com/bluenviron/mediamtx/internal/logger"
+	"github.com/bluenviron/mediamtx/internal/storage"
 	"github.com/bluenviron/mediamtx/internal/unit"
 )
 
@@ -105,6 +106,7 @@ type recFormatFMP4 struct {
 	nextSequenceNumber uint32
 
 	pathName string
+	stor     storage.Storage
 }
 
 func (f *recFormatFMP4) initialize() {
@@ -120,7 +122,6 @@ func (f *recFormatFMP4) initialize() {
 
 		track := newRecFormatFMP4Track(f, initTrack, f.pathName)
 		f.tracks = append(f.tracks, track)
-
 		return track
 	}
 

@@ -24,6 +24,8 @@ import (
 	"github.com/bluenviron/mediamtx/internal/logger"
 	"github.com/bluenviron/mediamtx/internal/record"
 	"github.com/bluenviron/mediamtx/internal/rlimit"
+	"github.com/bluenviron/mediamtx/internal/storage"
+	"github.com/bluenviron/mediamtx/internal/storage/psql"
 )
 
 var version = "v0.0.0"
@@ -304,7 +306,24 @@ func (p *Core) createResources(initial bool) error {
 		)
 	}
 
+	p.dbPool, err = database.CreateDbPool(
+		p.ctx,
+		database.CreatePgxConf(
+			p.conf.Database,
+		),
+	)
+	if err != nil {
+		return err
+	}
+
 	if p.pathManager == nil {
+		req := psql.NewReq(p.ctx, p.dbPool)
+		stor := storage.Storage{
+			Use: p.conf.Database.Use,
+			Req: req,
+			Sql: p.conf.Database.Sql,
+		}
+
 		p.pathManager = newPathManager(
 			p.conf.ExternalAuthenticationURL,
 			p.conf.RTSPAddress,
@@ -317,17 +336,8 @@ func (p *Core) createResources(initial bool) error {
 			p.externalCmdPool,
 			p.metrics,
 			p,
+			stor,
 		)
-	}
-
-	p.dbPool, err = database.CreateDbPool(
-		p.ctx,
-		database.CreatePgxConf(
-			p.conf.Database,
-		),
-	)
-	if err != nil {
-		return err
 	}
 
 	if p.conf.RTSP &&
@@ -744,6 +754,18 @@ func (p *Core) closeResources(newConf *conf.Conf, calledByAPI bool) {
 		closeSRTServer ||
 		closeLogger
 
+	closeDB := newConf == nil ||
+		newConf.Database.Use != p.conf.Database.Use ||
+		newConf.Database.DbAddress != p.conf.Database.DbAddress ||
+		newConf.Database.DbPort != p.conf.Database.DbPort ||
+		newConf.Database.DbName != p.conf.Database.DbName ||
+		newConf.Database.DbUser != p.conf.Database.DbUser ||
+		newConf.Database.DbPassword != p.conf.Database.DbPassword ||
+		newConf.Database.MaxConnections != p.conf.Database.MaxConnections ||
+		newConf.Database.Sql.InsertPath != p.conf.Database.Sql.InsertPath ||
+		newConf.Database.Sql.UpdateSize != p.conf.Database.Sql.UpdateSize ||
+		closePathManager
+
 	if newConf == nil && p.confWatcher != nil {
 		p.confWatcher.Close()
 		p.confWatcher = nil
@@ -823,7 +845,9 @@ func (p *Core) closeResources(newConf *conf.Conf, calledByAPI bool) {
 		p.logger = nil
 	}
 
-	database.ClosePool(p.dbPool)
+	if closeDB && p.dbPool != nil {
+		database.ClosePool(p.dbPool)
+	}
 }
 
 func (p *Core) reloadConf(newConf *conf.Conf, calledByAPI bool) error {

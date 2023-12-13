@@ -5,12 +5,14 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/aler9/writerseeker"
 	"github.com/bluenviron/mediacommon/pkg/formats/fmp4"
 
 	"github.com/bluenviron/mediamtx/internal/logger"
+	"github.com/bluenviron/mediamtx/internal/storage"
 )
 
 func writePart(
@@ -50,6 +52,7 @@ type recFormatFMP4Part struct {
 	endDTS     time.Duration
 
 	pathName string
+	stor     storage.Storage
 }
 
 func newRecFormatFMP4Part(
@@ -57,6 +60,7 @@ func newRecFormatFMP4Part(
 	sequenceNumber uint32,
 	startDTS time.Duration,
 	pathName string,
+	stor storage.Storage,
 ) *recFormatFMP4Part {
 	return &recFormatFMP4Part{
 		s:              s,
@@ -65,6 +69,7 @@ func newRecFormatFMP4Part(
 		created:        timeNow(),
 		partTracks:     make(map[*recFormatFMP4Track]*fmp4.PartTrack),
 		pathName:       pathName,
+		stor:           stor,
 	}
 }
 
@@ -72,7 +77,6 @@ func (p *recFormatFMP4Part) close() error {
 	if p.s.fi == nil {
 		p.s.fpath = encodeRecordPath(&recordPathParams{time: p.created}, p.s.f.a.resolvedPath)
 		p.s.f.a.wrapper.Log(logger.Debug, "creating segment %s", p.s.fpath)
-		fmt.Println(p.pathName, "- creating")
 
 		err := os.MkdirAll(filepath.Dir(p.s.fpath), 0o755)
 		if err != nil {
@@ -82,6 +86,23 @@ func (p *recFormatFMP4Part) close() error {
 		fi, err := os.Create(p.s.fpath)
 		if err != nil {
 			return err
+		}
+
+		if p.s.f.a.stor.Use {
+			paths := strings.Split(p.s.fpath, "/")
+			pathRec := strings.Join(paths[:len(paths)-1], "/")
+			err := p.s.f.a.stor.Req.ExecQuery(
+				fmt.Sprintf(
+					p.s.f.a.stor.Sql.InsertPath,
+					p.pathName,
+					pathRec,
+					paths[len(paths)-1],
+					time.Now().Format("2006-01-02 15:04:05"),
+				),
+			)
+			if err != nil {
+				return err
+			}
 		}
 
 		p.s.f.a.wrapper.OnSegmentCreate(p.s.fpath)
