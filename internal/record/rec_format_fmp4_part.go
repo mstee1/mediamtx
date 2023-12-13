@@ -97,7 +97,7 @@ func (p *recFormatFMP4Part) close() error {
 				),
 			)
 			if err != nil {
-				// os.Remove(p.s.fpath)
+				os.Remove(p.s.fpath)
 				return err
 			}
 		}
