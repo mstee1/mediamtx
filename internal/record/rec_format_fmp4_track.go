@@ -17,6 +17,7 @@ func newRecFormatFMP4Track(
 	f *recFormatFMP4,
 	initTrack *fmp4.InitTrack,
 	pathName string,
+
 ) *recFormatFMP4Track {
 	return &recFormatFMP4Track{
 		f:         f,

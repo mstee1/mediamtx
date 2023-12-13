@@ -61,7 +61,6 @@ func (a *agentInstance) initialize() {
 		a.format = &recFormatFMP4{
 			a:        a,
 			pathName: a.wrapper.PathName,
-			stor:     a.stor,
 		}
 		a.format.initialize()
 	}

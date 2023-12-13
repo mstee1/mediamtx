@@ -66,11 +66,11 @@ func (s *recFormatFMP4Segment) close() error {
 
 	if s.fi != nil {
 		s.f.a.wrapper.Log(logger.Debug, "closing segment %s", s.fpath)
+
 		err2 := s.fi.Close()
 		if err == nil {
 			err = err2
 		}
-
 		if err2 == nil {
 			s.f.a.wrapper.OnSegmentComplete(s.fpath)
 
@@ -108,7 +108,6 @@ func (s *recFormatFMP4Segment) record(track *recFormatFMP4Track, sample *sample)
 			s.f.nextSequenceNumber,
 			sample.dts,
 			s.pathName,
-			s.f.a.stor,
 		)
 
 		s.f.nextSequenceNumber++
@@ -123,7 +122,6 @@ func (s *recFormatFMP4Segment) record(track *recFormatFMP4Track, sample *sample)
 			s.f.nextSequenceNumber,
 			sample.dts,
 			s.pathName,
-			s.f.a.stor,
 		)
 		s.f.nextSequenceNumber++
 

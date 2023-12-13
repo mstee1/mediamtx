@@ -94,7 +94,7 @@ func (s *recFormatMPEGTSSegment) Write(p []byte) (int, error) {
 				fmt.Sprintf(
 					s.f.a.stor.Sql.InsertPath,
 					s.pathName,
-					pathRec,
+					pathRec+"/",
 					paths[len(paths)-1],
 					time.Now().Format("2006-01-02 15:04:05"),
 				),

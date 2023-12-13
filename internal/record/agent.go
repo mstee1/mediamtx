@@ -83,6 +83,7 @@ func (w *Agent) run() {
 
 		w.currentInstance = &agentInstance{
 			wrapper: w,
+			stor:    w.Stor,
 		}
 		w.currentInstance.initialize()
 	}
