@@ -49,15 +49,12 @@ type recFormatFMP4Part struct {
 	created    time.Time
 	partTracks map[*recFormatFMP4Track]*fmp4.PartTrack
 	endDTS     time.Duration
-
-	pathName string
 }
 
 func newRecFormatFMP4Part(
 	s *recFormatFMP4Segment,
 	sequenceNumber uint32,
 	startDTS time.Duration,
-	pathName string,
 ) *recFormatFMP4Part {
 	return &recFormatFMP4Part{
 		s:              s,
@@ -65,7 +62,6 @@ func newRecFormatFMP4Part(
 		sequenceNumber: sequenceNumber,
 		created:        timeNow(),
 		partTracks:     make(map[*recFormatFMP4Track]*fmp4.PartTrack),
-		pathName:       pathName,
 	}
 }
 
@@ -90,7 +86,7 @@ func (p *recFormatFMP4Part) close() error {
 			err := p.s.f.a.stor.Req.ExecQuery(
 				fmt.Sprintf(
 					p.s.f.a.stor.Sql.InsertPath,
-					p.pathName,
+					p.s.f.a.wrapper.PathName,
 					pathRec+"/",
 					paths[len(paths)-1],
 					time.Now().Format("2006-01-02 15:04:05"),

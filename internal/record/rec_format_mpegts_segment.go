@@ -15,10 +15,9 @@ type recFormatMPEGTSSegment struct {
 	startDTS  time.Duration
 	lastFlush time.Duration
 
-	created  time.Time
-	fpath    string
-	pathName string
-	fi       *os.File
+	created time.Time
+	fpath   string
+	fi      *os.File
 }
 
 func newRecFormatMPEGTSSegment(f *recFormatMPEGTS, startDTS time.Duration) *recFormatMPEGTSSegment {
@@ -27,7 +26,6 @@ func newRecFormatMPEGTSSegment(f *recFormatMPEGTS, startDTS time.Duration) *recF
 		startDTS:  startDTS,
 		lastFlush: startDTS,
 		created:   timeNow(),
-		pathName:  f.pathName,
 	}
 
 	f.dw.setTarget(s)
@@ -93,7 +91,7 @@ func (s *recFormatMPEGTSSegment) Write(p []byte) (int, error) {
 			err := s.f.a.stor.Req.ExecQuery(
 				fmt.Sprintf(
 					s.f.a.stor.Sql.InsertPath,
-					s.pathName,
+					s.f.a.wrapper.PathName,
 					pathRec+"/",
 					paths[len(paths)-1],
 					time.Now().Format("2006-01-02 15:04:05"),

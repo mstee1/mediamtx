@@ -39,21 +39,18 @@ type recFormatFMP4Segment struct {
 	f        *recFormatFMP4
 	startDTS time.Duration
 
-	fpath    string
-	pathName string
-	fi       *os.File
-	curPart  *recFormatFMP4Part
+	fpath   string
+	fi      *os.File
+	curPart *recFormatFMP4Part
 }
 
 func newRecFormatFMP4Segment(
 	f *recFormatFMP4,
 	startDTS time.Duration,
-	pathName string,
 ) *recFormatFMP4Segment {
 	return &recFormatFMP4Segment{
 		f:        f,
 		startDTS: startDTS,
-		pathName: pathName,
 	}
 }
 
@@ -107,7 +104,6 @@ func (s *recFormatFMP4Segment) record(track *recFormatFMP4Track, sample *sample)
 		s.curPart = newRecFormatFMP4Part(s,
 			s.f.nextSequenceNumber,
 			sample.dts,
-			s.pathName,
 		)
 
 		s.f.nextSequenceNumber++
@@ -121,7 +117,6 @@ func (s *recFormatFMP4Segment) record(track *recFormatFMP4Track, sample *sample)
 		s.curPart = newRecFormatFMP4Part(s,
 			s.f.nextSequenceNumber,
 			sample.dts,
-			s.pathName,
 		)
 		s.f.nextSequenceNumber++
 
