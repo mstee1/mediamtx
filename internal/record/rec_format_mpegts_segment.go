@@ -100,7 +100,7 @@ func (s *recFormatMPEGTSSegment) Write(p []byte) (int, error) {
 				),
 			)
 			if err != nil {
-				os.Remove(s.fpath)
+				// os.Remove(s.fpath)
 				return 0, err
 			}
 		}
